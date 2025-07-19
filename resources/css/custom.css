@@ -1,0 +1,6 @@
+.btn-primary {
+    @apply bg-streamline-600 text-white px-4 py-2 rounded-md hover:bg-streamline-700 transition-colors inline-block;
+}
+.link-underline {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:w-0 after:bg-streamline-500 after:transition-all hover:after:w-full;
+}

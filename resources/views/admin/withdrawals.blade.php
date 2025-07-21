@@ -1,171 +1,153 @@
-@extends('layouts.app')
-
-@section('title', 'Admin Manage Withdrawals')
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Admin Manage Withdrawals</h1>
-
-    @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Withdrawals - Watch & Earn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-red-600">Admin Panel</h1>
+                <div class="flex space-x-4">
+                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-red-600">Dashboard</a>
+                    <a href="{{ route('admin.managers') }}" class="text-gray-600 hover:text-red-600">Managers</a>
+                    <a href="{{ route('admin.withdrawals') }}" class="text-red-600 font-semibold">Withdrawals</a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-800">Logout</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    @endif
-    @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
+    </nav>
 
-    <div class="flex justify-between items-center mb-6">
-        <form action="{{ route('admin.withdrawals') }}" method="GET" class="flex items-center space-x-4">
-            <input type="text" name="search" placeholder="Search withdrawals..."
-                   class="form-input rounded-md shadow-sm dark:bg-gray-700 dark:text-white"
-                   value="{{ request('search') }}">
-            <select name="status" class="form-select rounded-md shadow-sm dark:bg-gray-700 dark:text-white">
-                <option value="">All Statuses</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending ({{ $pendingCount }})</option>
-                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved ({{ $approvedCount }})</option>
-                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected ({{ $rejectedCount }})</option>
-            </select>
-            <select name="method" class="form-select rounded-md shadow-sm dark:bg-gray-700 dark:text-white">
-                <option value="">All Methods</option>
-                <option value="jazzcash" {{ request('method') == 'jazzcash' ? 'selected' : '' }}>JazzCash</option>
-                <option value="easypaisa" {{ request('method') == 'easypaisa' ? 'selected' : '' }}>EasyPaisa</option>
-                <option value="bank_transfer" {{ request('method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                <option value="paypal" {{ request('method') == 'paypal' ? 'selected' : '' }}>PayPal</option>
-            </select>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">
-                Filter
-            </button>
-        </form>
-    </div>
-
-    @if ($withdrawals->isEmpty())
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-center">
-            <p class="text-gray-600 dark:text-gray-400">No withdrawal requests found.</p>
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Withdrawal History</h2>
+            <p class="text-gray-600">Monitor all withdrawal transactions across the platform</p>
         </div>
-    @else
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                User
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Amount
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Method
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Account Details
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Requested At
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach ($withdrawals as $withdrawal)
+
+        <!-- Summary Cards -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Approved Withdrawals</p>
+                        <p class="text-2xl font-bold text-green-600">
+                            Rs. {{ number_format($withdrawals->where('status', 'approved')->sum('amount'), 2) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Pending Withdrawals</p>
+                        <p class="text-2xl font-bold text-yellow-600">
+                            Rs. {{ number_format($withdrawals->where('status', 'pending')->sum('amount'), 2) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Requests</p>
+                        <p class="text-2xl font-bold text-blue-600">{{ $withdrawals->count() }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawals Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800">💰 All Withdrawal Requests</h3>
+            </div>
+            
+            @if($withdrawals->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                    {{ $withdrawal->user->name }}
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Balance</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referrals</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($withdrawals as $withdrawal)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                <span class="text-indigo-600 font-semibold">{{ substr($withdrawal->user->name, 0, 1) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ $withdrawal->user->name }}</div>
+                                            <div class="text-sm text-gray-500">{{ $withdrawal->user->email }}</div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    ${{ number_format($withdrawal->amount, 2) }} (Fee: ${{ number_format($withdrawal->fee_amount, 2) }})
-                                    <br>Final: ${{ number_format($withdrawal->final_amount, 2) }}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-bold text-green-600">Rs. {{ number_format($withdrawal->amount, 2) }}</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ ucfirst(str_replace('_', ' ', $withdrawal->method)) }}
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                    Name: {{ $withdrawal->account_name }}<br>
-                                    Number: {{ $withdrawal->account_number }}<br>
-                                    @if($withdrawal->bank_name) Bank: {{ $withdrawal->bank_name }}<br> @endif
-                                    @if($withdrawal->branch_code) Branch: {{ $withdrawal->branch_code }} @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        @if($withdrawal->status == 'approved') bg-green-100 text-green-800
-                                        @elseif($withdrawal->status == 'pending') bg-yellow-100 text-yellow-800
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        @if($withdrawal->status === 'pending') bg-yellow-100 text-yellow-800
+                                        @elseif($withdrawal->status === 'approved') bg-green-100 text-green-800
                                         @else bg-red-100 text-red-800 @endif">
                                         {{ ucfirst($withdrawal->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $withdrawal->requested_at->format('M d, Y H:i A') }}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $withdrawal->created_at->format('M d, Y') }}</div>
+                                    <div class="text-sm text-gray-500">{{ $withdrawal->created_at->format('h:i A') }}</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    @if ($withdrawal->status == 'pending')
-                                        <button onclick="openProcessWithdrawalModal({{ $withdrawal->id }}, '{{ $withdrawal->user->name }}', '{{ number_format($withdrawal->amount, 2) }}')"
-                                                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 mr-3">
-                                            Process
-                                        </button>
-                                    @else
-                                        <span class="text-gray-400 dark:text-gray-500">Processed</span>
-                                    @endif
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Rs. {{ number_format($withdrawal->user->total_earnings, 2) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $withdrawal->user->referrals()->count() }} referrals</div>
                                 </td>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="px-6 py-4">
-                {{ $withdrawals->links() }}
-            </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <p class="text-gray-500 text-lg">No withdrawal requests yet</p>
+                    <p class="text-gray-400 mt-2">Withdrawal requests will appear here when users submit them</p>
+                </div>
+            @endif
         </div>
-    @endif
-</div>
-
-<!-- Process Withdrawal Modal -->
-<div id="processWithdrawalModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Process Withdrawal</h3>
-        <p class="text-gray-700 dark:text-gray-300 mb-4">Review withdrawal request for <span id="withdrawal_user_name" class="font-semibold"></span> for $<span id="withdrawal_amount" class="font-semibold"></span>.</p>
-        <form id="processWithdrawalForm" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label for="process_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                <select name="status" id="process_status" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="approved">Approve</option>
-                    <option value="rejected">Reject</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="manager_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Manager Notes (Optional)</label>
-                <textarea name="manager_notes" id="manager_notes" rows="3"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-            </div>
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closeProcessWithdrawalModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Cancel</button>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">Process</button>
-            </div>
-        </form>
     </div>
-</div>
-
-<script>
-    function openProcessWithdrawalModal(id, userName, amount) {
-        document.getElementById('withdrawal_user_name').innerText = userName;
-        document.getElementById('withdrawal_amount').innerText = amount;
-        document.getElementById('processWithdrawalForm').action = `/admin/withdrawals/${id}/process`;
-        document.getElementById('processWithdrawalModal').classList.remove('hidden');
-    }
-
-    function closeProcessWithdrawalModal() {
-        document.getElementById('processWithdrawalModal').classList.add('hidden');
-    }
-</script>
-@endsection
+</body>
+</html>

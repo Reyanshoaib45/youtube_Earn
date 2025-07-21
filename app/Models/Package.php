@@ -11,62 +11,62 @@ class Package extends Model
 
     protected $fillable = [
         'name',
-        'slug',
-        'description',
         'price',
-        'video_limit',
-        'reward_per_video',
-        'min_withdrawal',
-        'referral_bonus',
-        'validity_days',
-        'features',
+        'duration_days',
+        'daily_video_limit',
+        'total_reward',
+        'description',
         'is_active',
-        'is_featured',
-        'badge_text',
-        'badge_color',
-        'sort_order',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'price' => 'decimal:2',
+        'total_reward' => 'decimal:2',
+        'is_active' => 'boolean',
+    ];
+
+    public function purchases()
     {
-        return [
-            'price' => 'decimal:2',
-            'reward_per_video' => 'decimal:2',
-            'min_withdrawal' => 'decimal:2',
-            'referral_bonus' => 'decimal:2',
-            'features' => 'json',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-        ];
+        return $this->hasMany(Purchase::class);
     }
 
-    public function userPackages()
+    // Calculate profit amount
+    public function getProfitAttribute()
     {
-        return $this->hasMany(UserPackage::class);
+        return $this->total_reward - $this->price;
     }
 
-    public function activeUserPackages()
+    // Calculate ROI percentage
+    public function getRoiPercentageAttribute()
     {
-        return $this->hasMany(UserPackage::class)->where('is_active', true)->where('end_date', '>=', now());
+        return round((($this->total_reward - $this->price) / $this->price) * 100, 1);
     }
 
-    public function getMaxEarnings()
+    // Calculate daily earning potential
+    public function getDailyEarningAttribute()
     {
-        return $this->video_limit * $this->reward_per_video;
+        return $this->daily_video_limit * 60; // Rs.60 per video
     }
 
-    public function scopeActive($query)
+    // Get total videos in package
+    public function getTotalVideosAttribute()
     {
-        return $query->where('is_active', true);
+        return $this->daily_video_limit * $this->duration_days;
     }
 
-    public function scopeFeatured($query)
+    // Validate package calculations
+    public function isCalculationValid()
     {
-        return $query->where('is_featured', true);
+        $expectedReward = $this->daily_video_limit * $this->duration_days * 60;
+        return abs($this->total_reward - $expectedReward) < 0.01; // Allow small floating point differences
     }
 
-    public function scopeOrdered($query)
+    // Get package tier based on price
+    public function getTierAttribute()
     {
-        return $query->orderBy('sort_order')->orderBy('price');
+        if ($this->price <= 1500) return 'Beginner';
+        if ($this->price <= 3500) return 'Intermediate';
+        if ($this->price <= 6000) return 'Advanced';
+        return 'Premium';
     }
 }

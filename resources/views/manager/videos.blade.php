@@ -1,357 +1,195 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Videos')
+@section('title', 'Purchase Requests - Manager Panel')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Manage Videos</h1>
-
-    @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">💳 Purchase Request Management</h2>
+            <p class="text-gray-600">Review and approve user package purchase requests</p>
         </div>
-    @endif
-    @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
 
-    <div class="flex justify-between items-center mb-6">
-        <form action="{{ route('manager.videos') }}" method="GET" class="flex items-center space-x-4">
-            <input type="text" name="search" placeholder="Search videos..."
-                   class="form-input rounded-md shadow-sm dark:bg-gray-700 dark:text-white"
-                   value="{{ request('search') }}">
-            <select name="category" class="form-select rounded-md shadow-sm dark:bg-gray-700 dark:text-white">
-                <option value="">All Categories</option>
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
-                @endforeach
-            </select>
-            <select name="status" class="form-select rounded-md shadow-sm dark:bg-gray-700 dark:text-white">
-                <option value="">All Statuses</option>
-                <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
-                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>Archived</option>
-            </select>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">
-                Filter
-            </button>
-        </form>
-        <button onclick="openAddVideoModal()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md">
-            Add New Video
-        </button>
-    </div>
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    @if ($videos->isEmpty())
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-center">
-            <p class="text-gray-600 dark:text-gray-400">No videos found.</p>
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Video Management</h2>
+            <p class="text-gray-600">Add, edit, and manage YouTube videos for users to watch</p>
         </div>
-    @else
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Title
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Category
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Reward
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Min Watch
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Active
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach ($videos as $video)
+
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Add Video Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">➕ Add New Video</h3>
+            <form method="POST" action="{{ route('manager.store-video') }}">
+                @csrf
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Video Title</label>
+                        <input type="text" name="title" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="Enter video title">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">YouTube URL</label>
+                        <input type="url" name="youtube_url" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Reward (Rs.)</label>
+                        <input type="number" name="reward" min="1" step="0.01" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="25.00">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Duration (seconds)</label>
+                        <input type="number" name="duration" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="180">
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+                        Add Video
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Videos List -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800">📹 All Videos</h3>
+            </div>
+
+            @if ($videos->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                    {{ $video->title }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $video->category->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    ${{ number_format($video->reward_amount, 2) }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $video->min_watch_minutes }} min
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        @if($video->status == 'published') bg-green-100 text-green-800
-                                        @elseif($video->status == 'draft') bg-yellow-100 text-yellow-800
-                                        @else bg-gray-100 text-gray-800 @endif">
-                                        {{ ucfirst($video->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    @if($video->is_active)
-                                        <span class="text-green-500">&#10004;</span>
-                                    @else
-                                        <span class="text-red-500">&#10006;</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button onclick="openEditVideoModal({{ $video->id }}, '{{ $video->title }}', '{{ $video->description }}', '{{ $video->video_url }}', '{{ $video->thumbnail ? Storage::url($video->thumbnail) : '' }}', {{ $video->category_id }}, {{ $video->reward_amount }}, {{ $video->min_watch_minutes }}, '{{ $video->difficulty_level }}', '{{ $video->status }}', {{ $video->is_active ? 'true' : 'false' }})"
-                                            class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-3">
-                                        Edit
-                                    </button>
-                                    <button onclick="openDeleteVideoModal({{ $video->id }}, '{{ $video->title }}')"
-                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">
-                                        Delete
-                                    </button>
-                                    <a href="{{ route('manager.video.analytics', $video->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 ml-3">
-                                        Analytics
-                                    </a>
-                                </td>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Video</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Reward</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Duration</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="px-6 py-4">
-                {{ $videos->links() }}
-            </div>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($videos as $video)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-16 w-24">
+                                                <img class="h-16 w-24 rounded object-cover"
+                                                    src="https://img.youtube.com/vi/{{ $video->youtube_id }}/mqdefault.jpg"
+                                                    alt="Video thumbnail">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ $video->title }}</div>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ $video->created_at->format('M d, Y') }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-green-600">Rs.
+                                            {{ number_format($video->reward, 2) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ gmdate('i:s', $video->duration) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {{ $video->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $video->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onclick="editVideo({{ $video->id }})"
+                                            class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                                        <form method="POST" action="{{ route('manager.delete-video', $video) }}"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this video?')"
+                                                class="text-red-600 hover:text-red-900">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <p class="text-gray-500">No videos added yet</p>
+                    <p class="text-sm text-gray-400 mt-2">Add your first video using the form above</p>
+                </div>
+            @endif
         </div>
-    @endif
-</div>
-
-<!-- Add Video Modal -->
-<div id="addVideoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Add New Video</h3>
-        <form action="{{ route('manager.video.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-4">
-                <label for="add_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-                <input type="text" name="title" id="add_title" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="add_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                <textarea name="description" id="add_description" rows="3"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-            </div>
-            <div class="mb-4">
-                <label for="add_video_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Video URL</label>
-                <input type="url" name="video_url" id="add_video_url" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="add_thumbnail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Thumbnail</label>
-                <input type="file" name="thumbnail" id="add_thumbnail"
-                       class="mt-1 block w-full text-gray-700 dark:text-gray-300">
-            </div>
-            <div class="mb-4">
-                <label for="add_category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                <select name="category_id" id="add_category_id" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="add_reward_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Reward Amount ($)</label>
-                <input type="number" name="reward_amount" id="add_reward_amount" step="0.01" min="0" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="add_min_watch_minutes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Min Watch Minutes</label>
-                <input type="number" name="min_watch_minutes" id="add_min_watch_minutes" min="1" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="add_difficulty_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Difficulty Level</label>
-                <select name="difficulty_level" id="add_difficulty_level" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="add_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                <select name="status" id="add_status" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="archived">Archived</option>
-                </select>
-            </div>
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" name="is_active" id="add_is_active" value="1" checked
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
-                <label for="add_is_active" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Is Active</label>
-            </div>
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closeAddVideoModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Cancel</button>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">Add Video</button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Edit Video Modal -->
-<div id="editVideoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Edit Video</h3>
-        <form id="editVideoForm" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="video_id" id="edit_video_id">
-            <div class="mb-4">
-                <label for="edit_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-                <input type="text" name="title" id="edit_title" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="edit_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                <textarea name="description" id="edit_description" rows="3"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-            </div>
-            <div class="mb-4">
-                <label for="edit_video_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Video URL</label>
-                <input type="url" name="video_url" id="edit_video_url" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="edit_thumbnail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Thumbnail</label>
-                <input type="file" name="thumbnail" id="edit_thumbnail"
-                       class="mt-1 block w-full text-gray-700 dark:text-gray-300">
-                <img id="current_thumbnail" src="/placeholder.svg" alt="Current Thumbnail" class="mt-2 max-h-24 hidden">
-            </div>
-            <div class="mb-4">
-                <label for="edit_category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                <select name="category_id" id="edit_category_id" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="edit_reward_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Reward Amount ($)</label>
-                <input type="number" name="reward_amount" id="edit_reward_amount" step="0.01" min="0" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="edit_min_watch_minutes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Min Watch Minutes</label>
-                <input type="number" name="min_watch_minutes" id="edit_min_watch_minutes" min="1" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="mb-4">
-                <label for="edit_difficulty_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Difficulty Level</label>
-                <select name="difficulty_level" id="edit_difficulty_level" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="edit_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                <select name="status" id="edit_status" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="archived">Archived</option>
-                </select>
-            </div>
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" name="is_active" id="edit_is_active" value="1"
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
-                <label for="edit_is_active" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Is Active</label>
-            </div>
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closeEditVideoModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Cancel</button>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">Update Video</button>
-            </div>
-        </form>
+    <!-- Edit Video Modal (Simple version) -->
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Edit Video</h3>
+            <form id="editForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Title</label>
+                    <input type="text" id="editTitle" name="title" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Reward (Rs.)</label>
+                    <input type="number" id="editReward" name="reward" min="1" step="0.01" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditModal()"
+                        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Update</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Delete Video Modal -->
-<div id="deleteVideoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Delete Video</h3>
-        <p class="text-gray-700 dark:text-gray-300 mb-4">Are you sure you want to delete "<span id="delete_video_title" class="font-semibold"></span>"? This action cannot be undone.</p>
-        <form id="deleteVideoForm" method="POST">
-            @csrf
-            @method('DELETE')
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closeDeleteVideoModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Cancel</button>
-                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md">Delete</button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<script>
-    function openAddVideoModal() {
-        document.getElementById('addVideoModal').classList.remove('hidden');
-    }
+    @push('scripts')
+        <script>
+            function editVideo(videoId) {
+                // This is a simplified version - in a real app, you'd fetch video data via AJAX
+                document.getElementById('editModal').classList.remove('hidden');
+                document.getElementById('editForm').action = `/manager/videos/${videoId}`;
+            }
 
-    function closeAddVideoModal() {
-        document.getElementById('addVideoModal').classList.add('hidden');
-    }
-
-    function openEditVideoModal(id, title, description, videoUrl, thumbnailUrl, categoryId, rewardAmount, minWatchMinutes, difficultyLevel, status, isActive) {
-        document.getElementById('edit_video_id').value = id;
-        document.getElementById('edit_title').value = title;
-        document.getElementById('edit_description').value = description;
-        document.getElementById('edit_video_url').value = videoUrl;
-        document.getElementById('edit_category_id').value = categoryId;
-        document.getElementById('edit_reward_amount').value = rewardAmount;
-        document.getElementById('edit_min_watch_minutes').value = minWatchMinutes;
-        document.getElementById('edit_difficulty_level').value = difficultyLevel;
-        document.getElementById('edit_status').value = status;
-        document.getElementById('edit_is_active').checked = isActive;
-
-        const currentThumbnail = document.getElementById('current_thumbnail');
-        if (thumbnailUrl) {
-            currentThumbnail.src = thumbnailUrl;
-            currentThumbnail.classList.remove('hidden');
-        } else {
-            currentThumbnail.classList.add('hidden');
-            currentThumbnail.src = '';
-        }
-
-        document.getElementById('editVideoForm').action = `/manager/videos/${id}`;
-        document.getElementById('editVideoModal').classList.remove('hidden');
-    }
-
-    function closeEditVideoModal() {
-        document.getElementById('editVideoModal').classList.add('hidden');
-    }
-
-    function openDeleteVideoModal(id, title) {
-        document.getElementById('delete_video_title').innerText = title;
-        document.getElementById('deleteVideoForm').action = `/manager/videos/${id}`;
-        document.getElementById('deleteVideoModal').classList.remove('hidden');
-    }
-
-    function closeDeleteVideoModal() {
-        document.getElementById('deleteVideoModal').classList.add('hidden');
-    }
-</script>
+            function closeEditModal() {
+                document.getElementById('editModal').classList.add('hidden');
+            }
+        </script>
+    @endpush
 @endsection

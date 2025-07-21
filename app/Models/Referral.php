@@ -12,19 +12,12 @@ class Referral extends Model
     protected $fillable = [
         'referrer_id',
         'referred_id',
-        'bonus_amount',
-        'bonus_paid',
-        'bonus_paid_at',
+        'reward',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'bonus_amount' => 'decimal:2',
-            'bonus_paid' => 'boolean',
-            'bonus_paid_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'reward' => 'decimal:2',
+    ];
 
     public function referrer()
     {

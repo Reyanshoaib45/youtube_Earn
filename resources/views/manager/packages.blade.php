@@ -1,225 +1,204 @@
 @extends('layouts.app')
 
-@section('title', 'Packages Management')
+@section('title', 'Purchase Requests - Manager Panel')
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
+    <div class="container mx-auto px-4 py-8">
         <div class="mb-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Packages Management</h1>
-                    <p class="mt-2 text-gray-600">View and manage all packages in the system</p>
-                </div>
-            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">💳 Purchase Request Management</h2>
+            <p class="text-gray-600">Review and approve user package purchase requests</p>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-blue-100">
-                        <i class="fas fa-box text-blue-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Packages</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $packages->total() }}</p>
-                    </div>
-                </div>
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
             </div>
+        @endif
 
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-green-100">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Active Packages</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ \App\Models\Package::where('is_active', true)->count() }}</p>
-                    </div>
-                </div>
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ session('error') }}
             </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-yellow-100">
-                        <i class="fas fa-users text-yellow-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Active Subscriptions</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ \App\Models\UserPackage::where('is_active', true)->count() }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-purple-100">
-                        <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">${{ number_format(\App\Models\UserPackage::where('payment_status', 'approved')->sum('amount_paid'), 2) }}</p>
-                    </div>
-                </div>
-            </div>
+        @endif
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Package Management</h2>
+            <p class="text-gray-600">Create and manage earning packages for users</p>
         </div>
 
-        <!-- Packages Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-900">All Packages</h2>
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
             </div>
+        @endif
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Videos Limit</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referral Bonus</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subscribers</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($packages as $package)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                                            <i class="fas fa-box text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $package->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ Str::limit($package->description, 50) }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">${{ number_format($package->price, 2) }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $package->duration_days }} days</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    @if($package->videos_per_day == -1)
-                                        Unlimited
-                                    @else
-                                        {{ $package->videos_per_day }}/day
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $package->referral_bonus_percentage }}%</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($package->is_active)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-check-circle mr-1"></i>
-                                        Active
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <i class="fas fa-times-circle mr-1"></i>
-                                        Inactive
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    {{ $package->userPackages()->where('is_active', true)->count() }} active
-                                </div>
-                                <div class="text-sm text-gray-500">
-                                    {{ $package->userPackages()->count() }} total
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $package->created_at->format('M d, Y') }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center">
-                                    <i class="fas fa-box text-gray-400 text-4xl mb-4"></i>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No packages found</h3>
-                                    <p class="text-gray-500">No packages have been created yet.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            @if($packages->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100">
-                {{ $packages->links() }}
-            </div>
-            @endif
-        </div>
-
-        <!-- Package Details Modal -->
-        <div id="packageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-                <div class="mt-3">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Package Details</h3>
-                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times text-xl"></i>
+        <!-- Add Package Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">➕ Create New Package</h3>
+            <form method="POST" action="{{ route('manager.store-package') }}">
+                @csrf
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Package Name</label>
+                        <input type="text" name="name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="e.g., Starter Package">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Price (Rs.)</label>
+                        <input type="number" name="price" min="1" step="0.01" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="1000.00">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Duration (Days)</label>
+                        <input type="number" name="duration_days" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="7">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Daily Video Limit</label>
+                        <input type="number" name="daily_video_limit" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="10">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Total Reward (Rs.)</label>
+                        <input type="number" name="total_reward" min="1" step="0.01" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+                            placeholder="2000.00">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit"
+                            class="w-full bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+                            Create Package
                         </button>
                     </div>
-                    <div id="modalContent">
-                        <!-- Content will be loaded here -->
+                </div>
+            </form>
+        </div>
+
+        <!-- Packages Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach ($packages as $package)
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4">
+                        <h3 class="text-xl font-bold">{{ $package->name }}</h3>
+                        <div class="text-3xl font-bold mt-2">Rs. {{ number_format($package->price) }}</div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Duration:</span>
+                                <span class="font-semibold">{{ $package->duration_days }} days</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Daily Videos:</span>
+                                <span class="font-semibold">{{ $package->daily_video_limit }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Reward:</span>
+                                <span class="font-semibold text-green-600">Rs.
+                                    {{ number_format($package->total_reward) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-t pt-3">
+                                <span class="text-gray-600">Profit:</span>
+                                <span class="font-bold text-green-600">Rs.
+                                    {{ number_format($package->total_reward - $package->price) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Status:</span>
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs font-semibold
+                                {{ $package->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $package->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-2">
+                            <button onclick="editPackage({{ $package->id }})"
+                                class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-300">
+                                Edit
+                            </button>
+                            <form method="POST" action="{{ route('manager.delete-package', $package) }}" class="flex-1">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    onclick="return confirm('Are you sure you want to delete this package?')"
+                                    class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-300">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            @endforeach
+        </div>
+
+        @if ($packages->count() === 0)
+            <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+                <p class="text-gray-500 text-lg">No packages created yet</p>
+                <p class="text-gray-400 mt-2">Create your first package using the form above</p>
             </div>
+        @endif
+    </div>
+
+    <!-- Edit Package Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Edit Package</h3>
+            <form id="editForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Package Name</label>
+                        <input type="text" id="editName" name="name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Price (Rs.)</label>
+                        <input type="number" id="editPrice" name="price" min="1" step="0.01" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Duration (Days)</label>
+                        <input type="number" id="editDuration" name="duration_days" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Daily Video Limit</label>
+                        <input type="number" id="editVideoLimit" name="daily_video_limit" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Total Reward (Rs.)</label>
+                        <input type="number" id="editTotalReward" name="total_reward" min="1" step="0.01"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeEditModal()"
+                        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Update</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+    @push('scripts')
+        <script>
+            function editPackage(packageId) {
+                // This is a simplified version - in a real app, you'd fetch package data via AJAX
+                document.getElementById('editModal').classList.remove('hidden');
+                document.getElementById('editForm').action = `/manager/packages/${packageId}`;
+            }
 
-<script>
-function viewPackage(packageId) {
-    // This would typically load package details via AJAX
-    // For now, we'll just show a placeholder
-    document.getElementById('modalContent').innerHTML = `
-        <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Package Name</label>
-                    <p class="mt-1 text-sm text-gray-900">Loading...</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Price</label>
-                    <p class="mt-1 text-sm text-gray-900">Loading...</p>
-                </div>
-            </div>
-            <div class="text-center py-4">
-                <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
-            </div>
-        </div>
-    `;
-    document.getElementById('packageModal').classList.remove('hidden');
-}
-
-function closeModal() {
-    document.getElementById('packageModal').classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.getElementById('packageModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
-});
-</script>
+            function closeEditModal() {
+                document.getElementById('editModal').classList.add('hidden');
+            }
+        </script>
+    @endpush
 @endsection

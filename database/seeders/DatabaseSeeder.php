@@ -17,21 +17,21 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'System Admin',
             'email' => 'Reyanshoaib@gmail.com',
-            'password' => Hash::make('Reyan123p098'),
+            'password' => Hash::make('Reyan123@098'),
             'role' => 'admin',
             'referral_code' => 'ADMIN001',
             'total_earnings' => 0,
         ]);
 
         // Create Manager User
-        // $manager = User::create([
-        //     'name' => 'Platform Manager',
-        //     'email' => 'manager@watchearn.com',
-        //     'password' => Hash::make('password'),
-        //     'role' => 'manager',
-        //     'referral_code' => 'MANAGER1',
-        //     'total_earnings' => 0,
-        // ]);
+        $manager = User::create([
+            'name' => 'Platform Manager',
+            'email' => 'moeezabdul444@gmail.com',
+            'password' => Hash::make('moeez123@098'),
+            'role' => 'manager',
+            'referral_code' => 'MANAGER1',
+            'total_earnings' => 0,
+        ]);
 
         // Create Test Users with Referral System
         // $testUser = User::create([

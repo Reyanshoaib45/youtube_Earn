@@ -53,7 +53,6 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->group(function (
     Route::get('/withdrawals', [ManagerController::class, 'withdrawals'])->name('manager.withdrawals');
     Route::post('/approve-withdrawal/{withdrawal}', [ManagerController::class, 'approveWithdrawal'])->name('manager.approve-withdrawal');
     Route::post('/ban-user/{user}', [ManagerController::class, 'banUser'])->name('manager.ban-user');
-
 });
 
 // Admin Routes
@@ -62,5 +61,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/managers', [AdminController::class, 'managers'])->name('admin.managers');
     Route::post('/managers', [AdminController::class, 'createManager'])->name('admin.create-manager');
     Route::put('/managers/{manager}', [AdminController::class, 'updateManager'])->name('admin.update-manager');
+    Route::post('/managers/{manager}/ban', [AdminController::class, 'banManager'])->name('admin.ban-manager');
+    Route::post('/managers/{manager}/unban', [AdminController::class, 'unbanManager'])->name('admin.unban-manager');
     Route::get('/withdrawals', [AdminController::class, 'withdrawals'])->name('admin.withdrawals');
 });

@@ -74,10 +74,11 @@
         </div>
 
         <!-- Mobile menu (hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden pb-4">
+        <div id="mobile-menu" class="hidden md:hidden pb-4 transition-all duration-300 ease-in-out">
             @auth
-                @if (auth()->user()->role === 'user')
-                    <div class="flex flex-col space-y-3">
+                @php $role = auth()->user()->role; @endphp
+                <div class="flex flex-col space-y-3">
+                    @if ($role === 'user')
                         <a href="{{ route('user.dashboard') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('user.dashboard') ? 'text-indigo-600 font-semibold' : '' }}">Dashboard</a>
                         <a href="{{ route('user.videos') }}"
@@ -88,9 +89,7 @@
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('user.referrals') ? 'text-indigo-600 font-semibold' : '' }}">Referrals</a>
                         <a href="{{ route('user.withdraw') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('user.withdraw') ? 'text-indigo-600 font-semibold' : '' }}">Withdraw</a>
-                    </div>
-                @elseif(auth()->user()->role === 'manager')
-                    <div class="flex flex-col space-y-3">
+                    @elseif($role === 'manager')
                         <a href="{{ route('manager.dashboard') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('manager.dashboard') ? 'text-indigo-600 font-semibold' : '' }}">Dashboard</a>
                         <a href="{{ route('manager.videos') }}"
@@ -102,17 +101,15 @@
                             Requests</a>
                         <a href="{{ route('manager.withdrawals') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('manager.withdrawals') ? 'text-indigo-600 font-semibold' : '' }}">Withdrawals</a>
-                    </div>
-                @elseif(auth()->user()->role === 'admin')
-                    <div class="flex flex-col space-y-3">
+                    @elseif($role === 'admin')
                         <a href="{{ route('admin.dashboard') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('admin.dashboard') ? 'text-indigo-600 font-semibold' : '' }}">Dashboard</a>
                         <a href="{{ route('admin.managers') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('admin.managers') ? 'text-indigo-600 font-semibold' : '' }}">Managers</a>
                         <a href="{{ route('admin.withdrawals') }}"
                             class="text-gray-600 hover:text-indigo-600 {{ request()->routeIs('admin.withdrawals') ? 'text-indigo-600 font-semibold' : '' }}">Withdrawals</a>
-                    </div>
-                @endif
+                    @endif
+                </div>
 
                 <form method="POST" action="{{ route('logout') }}" class="mt-3">
                     @csrf
@@ -134,4 +131,17 @@
         const menu = document.getElementById('mobile-menu');
         menu.classList.toggle('hidden');
     }
+
+    // Auto-close mobile menu on link click
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileLinks = document.querySelectorAll('#mobile-menu a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const menu = document.getElementById('mobile-menu');
+                if (!menu.classList.contains('hidden')) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+    });
 </script>

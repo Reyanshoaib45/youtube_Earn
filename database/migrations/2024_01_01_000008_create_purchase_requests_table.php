@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('payment_method')->default('jazzcash');
             $table->string('sender_number');
             $table->string('transaction_id')->nullable();
-            $table->text('payment_proof')->nullable(); // Screenshot or proof
+            $table->text('payment_proof')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('rejection_reason')->nullable();
             $table->timestamp('approved_at')->nullable();

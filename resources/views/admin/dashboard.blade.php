@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Watch & Earn</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg">
@@ -37,7 +39,9 @@
                 <div class="flex items-center">
                     <div class="bg-blue-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                            </path>
                         </svg>
                     </div>
                     <div class="ml-4">
@@ -51,7 +55,8 @@
                 <div class="flex items-center">
                     <div class="bg-green-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     <div class="ml-4">
@@ -65,7 +70,9 @@
                 <div class="flex items-center">
                     <div class="bg-yellow-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                            </path>
                         </svg>
                     </div>
                     <div class="ml-4">
@@ -79,7 +86,9 @@
                 <div class="flex items-center">
                     <div class="bg-red-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                     </div>
                     <div class="ml-4">
@@ -95,8 +104,8 @@
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">👨‍💼 Manager Management</h3>
                 <p class="text-gray-600 mb-4">Create and manage manager accounts</p>
-                <a href="{{ route('admin.managers') }}" 
-                   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
+                <a href="{{ route('admin.managers') }}"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
                     Manage Managers
                 </a>
             </div>
@@ -104,8 +113,8 @@
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">💰 Withdrawal History</h3>
                 <p class="text-gray-600 mb-4">View all withdrawal transactions</p>
-                <a href="{{ route('admin.withdrawals') }}" 
-                   class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-300">
+                <a href="{{ route('admin.withdrawals') }}"
+                    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-300">
                     View Withdrawals
                 </a>
             </div>
@@ -136,7 +145,8 @@
                         </div>
                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
                             <span class="text-gray-600">Total Payouts:</span>
-                            <span class="font-semibold text-yellow-600">Rs. {{ number_format($totalWithdrawals, 2) }}</span>
+                            <span class="font-semibold text-yellow-600">Rs.
+                                {{ number_format($totalWithdrawals, 2) }}</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
                             <span class="text-gray-600">Pending Requests:</span>
@@ -165,4 +175,5 @@
         </div>
     </div>
 </body>
+
 </html>

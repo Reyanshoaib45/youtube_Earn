@@ -36,24 +36,4 @@ class PurchaseRequest extends Model
     {
         return $this->belongsTo(Package::class);
     }
-
-    public function getStatusColorAttribute()
-    {
-        return match($this->status) {
-            'pending' => 'yellow',
-            'approved' => 'green',
-            'rejected' => 'red',
-            default => 'gray'
-        };
-    }
-
-    public function getStatusIconAttribute()
-    {
-        return match($this->status) {
-            'pending' => '⏳',
-            'approved' => '✅',
-            'rejected' => '❌',
-            default => '❓'
-        };
-    }
 }

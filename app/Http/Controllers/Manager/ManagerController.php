@@ -9,6 +9,7 @@ use App\Models\WithdrawalRequest;
 use App\Models\PurchaseRequest;
 use App\Models\Purchase;
 use App\Models\User;
+use App\Models\Referral;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -38,20 +39,35 @@ class ManagerController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'youtube_url' => 'required|url|regex:/^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/',
+            'youtube_url' => 'required|url',
             'reward' => 'required|numeric|min:1|max:1000',
             'duration' => 'required|integer|min:30|max:3600',
         ]);
 
+        // Extract YouTube video ID
+        $youtubeId = $this->extractYouTubeId($request->youtube_url);
+        
+        if (!$youtubeId) {
+            return back()->withErrors(['youtube_url' => 'Invalid YouTube URL']);
+        }
+
         Video::create([
             'title' => $request->title,
             'youtube_url' => $request->youtube_url,
+            'youtube_id' => $youtubeId,
             'reward' => $request->reward,
             'duration' => $request->duration,
             'is_active' => true,
         ]);
 
         return back()->with('success', 'Video added successfully!');
+    }
+
+    private function extractYouTubeId($url)
+    {
+        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/';
+        preg_match($pattern, $url, $matches);
+        return isset($matches[1]) ? $matches[1] : null;
     }
 
     public function updateVideo(Request $request, Video $video)
@@ -160,7 +176,31 @@ class ManagerController extends Controller
             'approved_at' => now()
         ]);
 
+        // Process referral reward if user was referred
+        $this->processReferralReward($purchaseRequest->user, $purchaseRequest->amount);
+
         return back()->with('success', 'Purchase request approved successfully! User package is now active.');
+    }
+
+    private function processReferralReward($user, $packageAmount)
+    {
+        if ($user->referred_by) {
+            $referrer = User::find($user->referred_by);
+            if ($referrer) {
+                // Calculate referral reward (10% of package price)
+                $referralReward = $packageAmount * 0.10;
+                
+                // Create referral record
+                Referral::create([
+                    'referrer_id' => $referrer->id,
+                    'referred_id' => $user->id,
+                    'reward' => $referralReward,
+                ]);
+
+                // Add reward to referrer's earnings
+                $referrer->increment('total_earnings', $referralReward);
+            }
+        }
     }
 
     public function rejectPurchaseRequest(Request $request, PurchaseRequest $purchaseRequest)

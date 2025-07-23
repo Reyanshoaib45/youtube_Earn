@@ -46,11 +46,12 @@
                             <p class="text-gray-700 mb-2">Send <strong class="text-red-600">Rs.
                                     {{ number_format($package->price) }}</strong> to:</p>
                             <div class="flex items-center justify-between bg-white rounded-lg p-3 border-2 border-red-300">
-                                <span class="text-2xl font-bold text-red-600" id="jazzcashNumber">03001234567</span>
+                                <span class="text-2xl font-bold text-red-600" id="jazzcashNumber">03241179101</span>
                                 <button onclick="copyJazzCashNumber()"
                                     class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
                                     📋 Copy
                                 </button>
+
                             </div>
                         </div>
                     </div>

@@ -47,6 +47,7 @@
                                     {{ number_format($package->price) }}</strong> to:</p>
                             <div class="flex items-center justify-between bg-white rounded-lg p-3 border-2 border-red-300">
                                 <span class="text-2xl font-bold text-red-600" id="jazzcashNumber">03241179101</span>
+                                <span class=" text-red-600" id="jazzcashNumber">Abdul Samad</span>
                                 <button onclick="copyJazzCashNumber()"
                                     class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
                                     📋 Copy
